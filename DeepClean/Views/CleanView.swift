@@ -406,7 +406,7 @@ struct CleanResultView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Errors:")
                             .font(SumiTypography.mono)
-                            .foregroundStyle(.errorRed)
+                            .foregroundStyle(Color.errorRed)
 
                         ForEach(result.errors, id: \.self) { error in
                             Text("• \(error)")

@@ -65,7 +65,7 @@ struct StatusView: View {
             // Live indicator
             HStack(spacing: 8) {
                 Circle()
-                    .fill(isRefreshing ? SumiColors.accent(colorScheme) : .successGreen)
+                    .fill(isRefreshing ? SumiColors.accent(colorScheme) : Color.successGreen)
                     .frame(width: 8, height: 8)
 
                 Text("Live")
@@ -351,9 +351,9 @@ struct ProcessRow: View {
 
     private var cpuColor: Color {
         if process.cpuUsage > 50 {
-            return .errorRed
+            return Color.errorRed
         } else if process.cpuUsage > 20 {
-            return .warningOrange
+            return Color.warningOrange
         }
         return SumiColors.accent(colorScheme)
     }

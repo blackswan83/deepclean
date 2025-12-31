@@ -376,10 +376,10 @@ struct SystemStatus {
 
     var healthColor: Color {
         switch healthScore {
-        case 80...100: return .successGreen
-        case 60..<80: return .terminalGreen
-        case 40..<60: return .warningOrange
-        default: return .errorRed
+        case 80...100: return Color.successGreen
+        case 60..<80: return Color.terminalGreen
+        case 40..<60: return Color.warningOrange
+        default: return Color.errorRed
         }
     }
 }

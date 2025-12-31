@@ -102,7 +102,7 @@ struct OptimizeView: View {
                         HStack(spacing: 8) {
                             Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
                                 .font(.system(size: 12))
-                                .foregroundStyle(result.success ? .successGreen : .errorRed)
+                                .foregroundStyle(result.success ? Color.successGreen : Color.errorRed)
 
                             Text(result.taskName)
                                 .font(SumiTypography.monoSmall)
@@ -112,7 +112,7 @@ struct OptimizeView: View {
 
                             Text(result.success ? "Done" : "Failed")
                                 .font(SumiTypography.monoSmall)
-                                .foregroundStyle(result.success ? .successGreen : .errorRed)
+                                .foregroundStyle(result.success ? Color.successGreen : Color.errorRed)
                         }
                     }
                 }
@@ -129,7 +129,7 @@ struct OptimizeView: View {
             HStack(spacing: 16) {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 24))
-                    .foregroundStyle(.warningOrange)
+                    .foregroundStyle(Color.warningOrange)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Some tasks require administrator privileges")
@@ -212,7 +212,7 @@ struct TaskRow: View {
                     if task.requiresSudo {
                         Text("sudo")
                             .font(SumiTypography.monoSmall)
-                            .foregroundStyle(.warningOrange)
+                            .foregroundStyle(Color.warningOrange)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 2)
                             .background(
@@ -233,7 +233,7 @@ struct TaskRow: View {
             if task.isCompleted {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 16))
-                    .foregroundStyle(.successGreen)
+                    .foregroundStyle(Color.successGreen)
             } else if task.isRunning || isRunning {
                 SumiSpinner()
             }
@@ -275,7 +275,7 @@ struct OptimizeResultsView: View {
             // Icon
             Image(systemName: allSuccessful ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
-                .foregroundStyle(allSuccessful ? SumiColors.accent(colorScheme) : .warningOrange)
+                .foregroundStyle(allSuccessful ? SumiColors.accent(colorScheme) : Color.warningOrange)
 
             // Title
             Text("Optimization Complete")
@@ -304,7 +304,7 @@ struct OptimizeResultsView: View {
                         HStack(spacing: 12) {
                             Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
                                 .font(.system(size: 14))
-                                .foregroundStyle(result.success ? .successGreen : .errorRed)
+                                .foregroundStyle(result.success ? Color.successGreen : Color.errorRed)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(result.taskName)
@@ -314,7 +314,7 @@ struct OptimizeResultsView: View {
                                 if let error = result.error {
                                     Text(error)
                                         .font(SumiTypography.monoSmall)
-                                        .foregroundStyle(.errorRed)
+                                        .foregroundStyle(Color.errorRed)
                                         .lineLimit(2)
                                 }
                             }

@@ -439,7 +439,7 @@ struct UninstallResultsView: View {
             // Icon
             Image(systemName: successCount == results.count ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
-                .foregroundStyle(successCount == results.count ? SumiColors.accent(colorScheme) : .warningOrange)
+                .foregroundStyle(successCount == results.count ? SumiColors.accent(colorScheme) : Color.warningOrange)
 
             // Title
             Text("Uninstall Complete")
@@ -489,7 +489,7 @@ struct UninstallResultsView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(result.appName)
                                     .font(SumiTypography.mono)
-                                    .foregroundStyle(.errorRed)
+                                    .foregroundStyle(Color.errorRed)
 
                                 ForEach(result.errors, id: \.self) { error in
                                     Text("• \(error)")

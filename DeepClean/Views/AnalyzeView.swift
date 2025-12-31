@@ -163,9 +163,9 @@ struct AnalyzeView: View {
 
     private var diskUsageColor: Color {
         if diskUsagePercent > 0.9 {
-            return .errorRed
+            return Color.errorRed
         } else if diskUsagePercent > 0.75 {
-            return .warningOrange
+            return Color.warningOrange
         }
         return SumiColors.accent(colorScheme)
     }
@@ -412,7 +412,7 @@ struct DiskItemRow: View {
             // Icon
             Image(systemName: item.isDirectory ? "folder.fill" : fileIcon)
                 .font(.system(size: 16))
-                .foregroundStyle(item.isDirectory ? .warningOrange : SumiColors.secondary(colorScheme))
+                .foregroundStyle(item.isDirectory ? Color.warningOrange : SumiColors.secondary(colorScheme))
                 .frame(width: 24)
 
             // Name
@@ -426,7 +426,7 @@ struct DiskItemRow: View {
                     if let age = item.ageIndicator {
                         Text(age)
                             .font(SumiTypography.monoSmall)
-                            .foregroundStyle(.warningOrange)
+                            .foregroundStyle(Color.warningOrange)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 2)
                             .background(
@@ -529,9 +529,9 @@ struct DiskItemRow: View {
     private var sizeColor: Color {
         let percent = Double(item.size) / Double(maxSize)
         if percent > 0.5 {
-            return .errorRed
+            return Color.errorRed
         } else if percent > 0.25 {
-            return .warningOrange
+            return Color.warningOrange
         }
         return SumiColors.accent(colorScheme)
     }

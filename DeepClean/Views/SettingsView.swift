@@ -105,37 +105,41 @@ struct SettingsView: View {
             .padding(.horizontal)
 
             // List
-            List {
-                ForEach(whitelistManager.items) { item in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.path)
-                                .font(SumiTypography.mono)
-                                .foregroundStyle(SumiColors.primary(colorScheme))
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(whitelistManager.items) { item in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(item.path)
+                                    .font(SumiTypography.mono)
+                                    .foregroundStyle(SumiColors.primary(colorScheme))
 
-                            if let reason = item.reason {
-                                Text(reason)
+                                if let reason = item.reason {
+                                    Text(reason)
+                                        .font(SumiTypography.monoSmall)
+                                        .foregroundStyle(SumiColors.secondary(colorScheme))
+                                }
+
+                                Text("Added \(item.addedDate, style: .relative) ago")
                                     .font(SumiTypography.monoSmall)
                                     .foregroundStyle(SumiColors.secondary(colorScheme))
                             }
 
-                            Text("Added \(item.addedDate, style: .relative) ago")
-                                .font(SumiTypography.monoSmall)
-                                .foregroundStyle(SumiColors.secondary(colorScheme))
-                        }
+                            Spacer()
 
-                        Spacer()
-
-                        Button(action: { whitelistManager.remove(item) }) {
-                            Image(systemName: "trash")
-                                .foregroundStyle(.errorRed)
+                            Button(action: { whitelistManager.remove(item) }) {
+                                Image(systemName: "trash")
+                                    .foregroundStyle(Color.errorRed)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                        .padding(12)
+                        .background(SumiColors.surface(colorScheme))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
                     }
-                    .padding(.vertical, 4)
                 }
+                .padding(.horizontal)
             }
-            .listStyle(.plain)
         }
         .padding()
     }

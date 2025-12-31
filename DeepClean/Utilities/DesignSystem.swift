@@ -254,10 +254,10 @@ struct StatusBadge: View {
 
         var color: Color {
             switch self {
-            case .success: return .successGreen
-            case .warning: return .warningOrange
-            case .error: return .errorRed
-            case .info: return .terminalGreen
+            case .success: return Color.successGreen
+            case .warning: return Color.warningOrange
+            case .error: return Color.errorRed
+            case .info: return Color.terminalGreen
             }
         }
 
@@ -346,7 +346,7 @@ struct MetricCard: View {
                         Text("\(abs(Int(trend)))%")
                             .font(SumiTypography.monoSmall)
                     }
-                    .foregroundStyle(trend >= 0 ? .errorRed : .successGreen)
+                    .foregroundStyle(trend >= 0 ? Color.errorRed : Color.successGreen)
                 }
             }
 
