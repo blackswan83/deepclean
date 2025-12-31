@@ -12,7 +12,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "DeepClean",
-            path: "DeepClean"
+            path: "DeepClean",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-implicit-dynamic"])
+            ]
         )
     ]
 )
