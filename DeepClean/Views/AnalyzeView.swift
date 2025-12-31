@@ -366,15 +366,11 @@ struct AnalyzeView: View {
     }
 
     private func openItem(_ item: DiskItem) {
-        Task {
-            await AnalyzeService.shared.openItem(item.path)
-        }
+        AnalyzeService.shared.openItem(item.path)
     }
 
     private func revealInFinder(_ item: DiskItem) {
-        Task {
-            await AnalyzeService.shared.revealInFinder(item.path)
-        }
+        AnalyzeService.shared.revealInFinder(item.path)
     }
 
     private func deleteItem(_ item: DiskItem) {
