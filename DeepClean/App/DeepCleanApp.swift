@@ -11,7 +11,7 @@ struct DeepCleanApp: App {
                 .environmentObject(appState)
                 .frame(minWidth: 900, minHeight: 600)
         }
-        .windowStyle(.hiddenTitleBar)
+        .windowStyle(.automatic)
         .commands {
             CommandGroup(replacing: .newItem) {
                 Button("Scan System") {
@@ -83,6 +83,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Configure app appearance
         NSApp.appearance = NSAppearance(named: .darkAqua)
+
+        // Ensure app is active and window is visible
+        NSApp.activate(ignoringOtherApps: true)
+
+        // Make sure the main window is visible
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if let window = NSApp.windows.first {
+                window.makeKeyAndOrderFront(nil)
+                window.center()
+            }
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
