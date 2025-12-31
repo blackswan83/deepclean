@@ -11,6 +11,9 @@ struct ContentView: View {
             detailView
         }
         .background(SumiColors.background(colorScheme))
+        .onAppear {
+            print("✅ ContentView appeared!")
+        }
     }
 
     @ViewBuilder

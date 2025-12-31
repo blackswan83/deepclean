@@ -81,17 +81,30 @@ struct DeepCleanApp: App {
 // MARK: - App Delegate
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        print("🚀 App launched!")
+
         // Configure app appearance
         NSApp.appearance = NSAppearance(named: .darkAqua)
 
         // Ensure app is active and window is visible
+        NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+
+        print("📱 Windows count: \(NSApp.windows.count)")
+        for (index, window) in NSApp.windows.enumerated() {
+            print("  Window \(index): \(window.title) - frame: \(window.frame)")
+        }
 
         // Make sure the main window is visible
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if let window = NSApp.windows.first {
-                window.makeKeyAndOrderFront(nil)
-                window.center()
+            print("⏰ Delayed check - Windows count: \(NSApp.windows.count)")
+            for window in NSApp.windows {
+                if window.contentView != nil {
+                    print("  Found window with content, showing it")
+                    window.setFrame(NSRect(x: 100, y: 100, width: 1000, height: 700), display: true)
+                    window.makeKeyAndOrderFront(nil)
+                    window.orderFrontRegardless()
+                }
             }
         }
     }
