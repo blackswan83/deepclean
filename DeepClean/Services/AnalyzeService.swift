@@ -32,7 +32,7 @@ actor AnalyzeService {
                 let childCount: Int?
 
                 if isDirectory {
-                    size = await calculateDirectorySize(at: fullPath)
+                    size = calculateDirectorySize(at: fullPath)
                     childCount = try? fileManager.contentsOfDirectory(atPath: fullPath).count
                 } else {
                     size = (attributes[.size] as? Int64) ?? 0
@@ -80,7 +80,7 @@ actor AnalyzeService {
 
             guard fileManager.fileExists(atPath: path) else { continue }
 
-            let size = await calculateDirectorySize(at: path)
+            let size = calculateDirectorySize(at: path)
             let childCount = try? fileManager.contentsOfDirectory(atPath: path).count
             let attributes = try? fileManager.attributesOfItem(atPath: path)
             let modDate = attributes?[.modificationDate] as? Date
@@ -106,7 +106,7 @@ actor AnalyzeService {
         let fileManager = FileManager.default
 
         // Home directory
-        let homeSize = await calculateDirectorySize(at: NSHomeDirectory())
+        let homeSize = calculateDirectorySize(at: NSHomeDirectory())
         items.append(DiskItem(
             name: "Home (~)",
             path: NSHomeDirectory(),
@@ -119,7 +119,7 @@ actor AnalyzeService {
         // Applications
         let appsPath = "/Applications"
         if fileManager.fileExists(atPath: appsPath) {
-            let appsSize = await calculateDirectorySize(at: appsPath)
+            let appsSize = calculateDirectorySize(at: appsPath)
             items.append(DiskItem(
                 name: "Applications",
                 path: appsPath,
@@ -133,7 +133,7 @@ actor AnalyzeService {
         // Library
         let libPath = "/Library"
         if fileManager.fileExists(atPath: libPath) {
-            let libSize = await calculateDirectorySize(at: libPath)
+            let libSize = calculateDirectorySize(at: libPath)
             items.append(DiskItem(
                 name: "System Library",
                 path: libPath,
@@ -172,7 +172,7 @@ actor AnalyzeService {
     }
 
     // MARK: - Find Large Files
-    func findLargeFiles(in path: String, minSize: Int64 = 100_000_000) async -> [DiskItem] {
+    func findLargeFiles(in path: String, minSize: Int64 = 100_000_000) -> [DiskItem] {
         let fileManager = FileManager.default
         var largeFiles: [DiskItem] = []
 
@@ -187,7 +187,7 @@ actor AnalyzeService {
             errorHandler: nil
         ) else { return [] }
 
-        for case let fileURL as URL in enumerator {
+        while let fileURL = enumerator.nextObject() as? URL {
             do {
                 let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
 
@@ -215,7 +215,7 @@ actor AnalyzeService {
     }
 
     // MARK: - Find Old Files
-    func findOldFiles(in path: String, olderThan months: Int = 6) async -> [DiskItem] {
+    func findOldFiles(in path: String, olderThan months: Int = 6) -> [DiskItem] {
         let fileManager = FileManager.default
         var oldFiles: [DiskItem] = []
 
@@ -231,7 +231,7 @@ actor AnalyzeService {
             errorHandler: nil
         ) else { return [] }
 
-        for case let fileURL as URL in enumerator {
+        while let fileURL = enumerator.nextObject() as? URL {
             do {
                 let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
 
@@ -261,7 +261,7 @@ actor AnalyzeService {
     }
 
     // MARK: - Calculate Directory Size
-    private func calculateDirectorySize(at path: String) async -> Int64 {
+    private nonisolated func calculateDirectorySize(at path: String) -> Int64 {
         let fileManager = FileManager.default
         var totalSize: Int64 = 0
 
@@ -276,7 +276,7 @@ actor AnalyzeService {
             errorHandler: nil
         ) else { return 0 }
 
-        for case let fileURL as URL in enumerator {
+        while let fileURL = enumerator.nextObject() as? URL {
             do {
                 let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
                 if resourceValues.isDirectory == false {
@@ -291,7 +291,7 @@ actor AnalyzeService {
     }
 
     // MARK: - Get Disk Usage Stats
-    func getDiskUsage() async -> (total: Int64, used: Int64, free: Int64) {
+    func getDiskUsage() -> (total: Int64, used: Int64, free: Int64) {
         let fileManager = FileManager.default
 
         do {
@@ -307,7 +307,7 @@ actor AnalyzeService {
     }
 
     // MARK: - Delete Item
-    func deleteItem(at path: String, moveToTrash: Bool = true) async throws {
+    func deleteItem(at path: String, moveToTrash: Bool = true) throws {
         let fileManager = FileManager.default
         let url = URL(fileURLWithPath: path)
 
@@ -319,13 +319,13 @@ actor AnalyzeService {
     }
 
     // MARK: - Open in Finder
-    func revealInFinder(_ path: String) {
+    nonisolated func revealInFinder(_ path: String) {
         let url = URL(fileURLWithPath: path)
         NSWorkspace.shared.activateFileViewerSelecting([url])
     }
 
     // MARK: - Open Item
-    func openItem(_ path: String) {
+    nonisolated func openItem(_ path: String) {
         let url = URL(fileURLWithPath: path)
         NSWorkspace.shared.open(url)
     }

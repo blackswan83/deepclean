@@ -6,6 +6,22 @@ actor CleanService {
 
     private init() {}
 
+    // MARK: - Helper to collect URLs from enumerator (synchronous)
+    private nonisolated func collectURLs(from enumerator: FileManager.DirectoryEnumerator, resourceKeys: Set<URLResourceKey>) -> [(URL, Int64, Bool)] {
+        var results: [(URL, Int64, Bool)] = []
+        while let fileURL = enumerator.nextObject() as? URL {
+            do {
+                let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
+                let isDirectory = resourceValues.isDirectory ?? false
+                let size = Int64(resourceValues.fileSize ?? 0)
+                results.append((fileURL, size, isDirectory))
+            } catch {
+                continue
+            }
+        }
+        return results
+    }
+
     // MARK: - Scan for cleanable items
     func scanCategories(_ categories: [CleanCategory]) async -> [CleanCategory] {
         var updatedCategories = categories
@@ -15,7 +31,7 @@ actor CleanService {
 
             for path in category.paths {
                 let expandedPath = (path as NSString).expandingTildeInPath
-                totalSize += await calculateDirectorySize(at: expandedPath)
+                totalSize += calculateDirectorySize(at: expandedPath)
             }
 
             updatedCategories[index].estimatedSize = totalSize
@@ -25,7 +41,7 @@ actor CleanService {
     }
 
     // MARK: - Calculate Directory Size
-    private func calculateDirectorySize(at path: String) async -> Int64 {
+    private nonisolated func calculateDirectorySize(at path: String) -> Int64 {
         let fileManager = FileManager.default
         var totalSize: Int64 = 0
 
@@ -40,14 +56,10 @@ actor CleanService {
             errorHandler: nil
         ) else { return 0 }
 
-        for case let fileURL as URL in enumerator {
-            do {
-                let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
-                if resourceValues.isDirectory == false {
-                    totalSize += Int64(resourceValues.fileSize ?? 0)
-                }
-            } catch {
-                continue
+        let files = collectURLs(from: enumerator, resourceKeys: resourceKeys)
+        for (_, size, isDirectory) in files {
+            if !isDirectory {
+                totalSize += size
             }
         }
 
@@ -81,7 +93,7 @@ actor CleanService {
                 }
 
                 do {
-                    let result = try await cleanPath(expandedPath, dryRun: dryRun, whitelist: whitelist)
+                    let result = try cleanPath(expandedPath, dryRun: dryRun, whitelist: whitelist)
                     totalFreed += result.bytesFreed
                     filesDeleted += result.filesDeleted
                 } catch {
@@ -103,7 +115,7 @@ actor CleanService {
     }
 
     // MARK: - Clean Path
-    private func cleanPath(_ path: String, dryRun: Bool, whitelist: WhitelistManager) async throws -> (bytesFreed: Int64, filesDeleted: Int) {
+    private nonisolated func cleanPath(_ path: String, dryRun: Bool, whitelist: WhitelistManager) throws -> (bytesFreed: Int64, filesDeleted: Int) {
         let fileManager = FileManager.default
         var bytesFreed: Int64 = 0
         var filesDeleted = 0
@@ -125,7 +137,7 @@ actor CleanService {
 
         var pathsToDelete: [(URL, Int64)] = []
 
-        for case let fileURL as URL in enumerator {
+        while let fileURL = enumerator.nextObject() as? URL {
             // Check whitelist
             if whitelist.isWhitelisted(fileURL.path) {
                 enumerator.skipDescendants()
@@ -163,7 +175,7 @@ actor CleanService {
     }
 
     // MARK: - Empty Trash
-    func emptyTrash(dryRun: Bool) async throws -> Int64 {
+    func emptyTrash(dryRun: Bool) throws -> Int64 {
         let trashPath = NSHomeDirectory() + "/.Trash"
         let fileManager = FileManager.default
 
@@ -179,14 +191,10 @@ actor CleanService {
             options: [],
             errorHandler: nil
         ) {
-            for case let fileURL as URL in enumerator {
-                do {
-                    let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
-                    if resourceValues.isDirectory == false {
-                        totalSize += Int64(resourceValues.fileSize ?? 0)
-                    }
-                } catch {
-                    continue
+            let files = collectURLs(from: enumerator, resourceKeys: resourceKeys)
+            for (_, size, isDirectory) in files {
+                if !isDirectory {
+                    totalSize += size
                 }
             }
         }
@@ -202,7 +210,7 @@ actor CleanService {
     }
 
     // MARK: - Browser Specific Cleanup
-    func cleanBrowserCaches(dryRun: Bool) async throws -> Int64 {
+    func cleanBrowserCaches(dryRun: Bool) throws -> Int64 {
         let browsers: [(name: String, paths: [String])] = [
             ("Chrome", [
                 "~/Library/Caches/Google/Chrome",
@@ -230,7 +238,7 @@ actor CleanService {
         for browser in browsers {
             for path in browser.paths {
                 let expandedPath = (path as NSString).expandingTildeInPath
-                totalFreed += await calculateDirectorySize(at: expandedPath)
+                totalFreed += calculateDirectorySize(at: expandedPath)
 
                 if !dryRun {
                     try? FileManager.default.removeItem(atPath: expandedPath)
@@ -242,7 +250,7 @@ actor CleanService {
     }
 
     // MARK: - Developer Tools Cleanup
-    func cleanDeveloperCaches(dryRun: Bool) async throws -> Int64 {
+    func cleanDeveloperCaches(dryRun: Bool) throws -> Int64 {
         let devPaths = [
             // Xcode
             "~/Library/Developer/Xcode/DerivedData",
@@ -276,7 +284,7 @@ actor CleanService {
 
         for path in devPaths {
             let expandedPath = (path as NSString).expandingTildeInPath
-            totalFreed += await calculateDirectorySize(at: expandedPath)
+            totalFreed += calculateDirectorySize(at: expandedPath)
 
             if !dryRun {
                 try? FileManager.default.removeItem(atPath: expandedPath)

@@ -43,7 +43,7 @@ actor UninstallService {
             }
 
             let name = item.replacingOccurrences(of: ".app", with: "")
-            let size = await calculateAppSize(at: appPath)
+            let size = calculateAppSize(at: appPath)
             let lastUsed = getLastUsedDate(for: appPath)
             let icon = NSWorkspace.shared.icon(forFile: appPath)
             let residuals = await findResidualFiles(for: bundleId, appName: name)
@@ -73,7 +73,7 @@ actor UninstallService {
                 }
 
                 let name = item.replacingOccurrences(of: ".app", with: "")
-                let size = await calculateAppSize(at: appPath)
+                let size = calculateAppSize(at: appPath)
                 let lastUsed = getLastUsedDate(for: appPath)
                 let icon = NSWorkspace.shared.icon(forFile: appPath)
                 let residuals = await findResidualFiles(for: bundleId, appName: name)
@@ -97,7 +97,7 @@ actor UninstallService {
     }
 
     // MARK: - Calculate App Size
-    private func calculateAppSize(at path: String) async -> Int64 {
+    private nonisolated func calculateAppSize(at path: String) -> Int64 {
         let fileManager = FileManager.default
         var totalSize: Int64 = 0
 
@@ -110,7 +110,7 @@ actor UninstallService {
             errorHandler: nil
         ) else { return 0 }
 
-        for case let fileURL as URL in enumerator {
+        while let fileURL = enumerator.nextObject() as? URL {
             do {
                 let resourceValues = try fileURL.resourceValues(forKeys: resourceKeys)
                 if resourceValues.isDirectory == false {
@@ -159,7 +159,7 @@ actor UninstallService {
 
                     if matchesPattern {
                         let fullPath = "\(expandedPath)/\(item)"
-                        let size = await calculateAppSize(at: fullPath)
+                        let size = calculateAppSize(at: fullPath)
 
                         let residual = InstalledApp.ResidualPath(
                             path: fullPath,

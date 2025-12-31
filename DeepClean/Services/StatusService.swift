@@ -111,9 +111,7 @@ actor StatusService {
         }
 
         let pageSize = Int64(vm_kernel_page_size)
-        let free = Int64(stats.free_count) * pageSize
         let active = Int64(stats.active_count) * pageSize
-        let inactive = Int64(stats.inactive_count) * pageSize
         let wired = Int64(stats.wire_count) * pageSize
         let compressed = Int64(stats.compressor_page_count) * pageSize
 
@@ -156,7 +154,8 @@ actor StatusService {
         let level = info[kIOPSCurrentCapacityKey] as? Int ?? 0
         let isCharging = info[kIOPSIsChargingKey] as? Bool ?? false
         let health = info[kIOPSBatteryHealthKey] as? Int ?? 100
-        let cycleCount = info[kIOPSCycleCountKey] as? Int ?? 0
+        // kIOPSCycleCountKey is not available in all macOS versions
+        let cycleCount = info["BatteryCycleCount"] as? Int ?? 0
 
         return (level, isCharging, health, cycleCount, 0)
     }

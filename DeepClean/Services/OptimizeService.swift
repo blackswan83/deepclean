@@ -8,8 +8,6 @@ actor OptimizeService {
 
     // MARK: - Run Optimization Task
     func runTask(_ task: OptimizeTask) async throws -> OptimizeResult {
-        let startTime = Date()
-
         if task.requiresSudo {
             return try await runWithPrivileges(task)
         } else {
