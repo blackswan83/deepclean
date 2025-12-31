@@ -326,6 +326,10 @@ struct MetricCard: View {
 
     @Environment(\.colorScheme) var colorScheme
 
+    private func trendColor(for trend: Double) -> Color {
+        trend >= 0 ? Color.errorRed : Color.successGreen
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -346,7 +350,7 @@ struct MetricCard: View {
                         Text("\(abs(Int(trend)))%")
                             .font(SumiTypography.monoSmall)
                     }
-                    .foregroundStyle(trend >= 0 ? Color.errorRed : Color.successGreen)
+                    .foregroundColor(trendColor(for: trend))
                 }
             }
 
