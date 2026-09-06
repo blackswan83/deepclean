@@ -21,5 +21,11 @@ deeprecovery/Sources/DeepRecovery/Views/   CleanView, UninstallView, AnalyzeView
 deeprecovery/Sources/deep/                 `deep clean --list`, `deep clean --max-risk safe`, `deep clean --run`
 ```
 
+Getting a build: the merged repository builds a signed-ready `.dmg` on GitHub's
+macOS runners, so no Mac is needed to produce one. Push a `v*` tag there, or open
+any workflow run under
+[Actions](https://github.com/blackswan83/deeprecovery/actions) and download the
+`DeepRecovery-dmg` artifact.
+
 This repository is kept for history. Do not build or run the code here for real
 cleanups; see the findings above for why.
